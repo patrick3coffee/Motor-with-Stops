@@ -1,0 +1,27 @@
+#######################################
+# Syntax Coloring Map For Motor_with_Stops
+#######################################
+
+#######################################
+# Datatypes (KEYWORD1)
+#######################################
+
+LiquidCrystal	KEYWORD1	MotorWithStops
+
+#######################################
+# Methods and Functions (KEYWORD2)
+#######################################
+
+open	KEYWORD2
+close	KEYWORD2
+stop	KEYWORD2
+suspend	KEYWORD2
+getMotorStatus	KEYWORD2
+getDirectionStatus	KEYWORD2
+getOpenStopStatus	KEYWORD2
+getCloseStopStatus	KEYWORD2
+
+#######################################
+# Constants (LITERAL1)
+#######################################
+
