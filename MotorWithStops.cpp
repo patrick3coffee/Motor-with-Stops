@@ -5,73 +5,65 @@
 #define REVERSE 1
 #endif
 
-MotorWithStops::MotorWithStops(int _dirPin,
-                               int _pwmPin,
-                               int _closeStop,
-                               int _openStop,
-                               bool _inverted) {
-  inverted = _inverted;
-  MotorWithStops(_dirPin, _pwmPin, _closeStop, _openStop);
-}
+MotorWithStops::MotorWithStops(int _dirPin, int _pwmPin,  bool _inverted = false, int _closeStopPin, int _openStopPin, bool _closeStopNormClose = false, bool _openStopNormClose = false) {
+    inverted = _inverted;
+    suspended = false;
 
-MotorWithStops::MotorWithStops(int _dirPin, int _pwmPin, int _closeStop, int _openStop) {
-  inverted = false;
-  suspended = false;
+    dirPin = _dirPin;
+    pwmPin = _pwmPin;
 
-  dirPin = _dirPin;
-  pwmPin = _pwmPin;
-  closeStop = _closeStop;
-  openStop = _openStop;
+    pinMode(dirPin, OUTPUT);
+    pinMode(pwmPin, OUTPUT);
 
-  pinMode(dirPin, OUTPUT);
-  pinMode(pwmPin, OUTPUT);
-  pinMode(closeStop, INPUT_PULLUP);
-  pinMode(openStop, INPUT_PULLUP);
-
-  digitalWrite(dirPin, LOW);
-  digitalWrite(pwmPin, LOW);
+    digitalWrite(dirPin, LOW);
+    digitalWrite(pwmPin, LOW);
+    
+    closeStop.setPin(_closeStopPin);
+    closeStop.setNormalState(_closeStopNormClose);
+    
+    openStop.setPin(_openStopPin);
+    openStop.setNormalState(_openStopNormClose);
 }
 
 void MotorWithStops::open() {
-  if (inverted) {
-    digitalWrite(dirPin, REVERSE);
-  }
-  else {
-    digitalWrite(dirPin, FORWARD);
-  }
-  driveMotorToStop(openStop);
+    if (inverted) {
+        digitalWrite(dirPin, REVERSE);
+    }
+    else {
+        digitalWrite(dirPin, FORWARD);
+    }
+    driveMotorToStop(&openStop);
 }
 
 void MotorWithStops::close() {
-  if (inverted) {
-    digitalWrite(dirPin, FORWARD);
-  }
-  else {
-    digitalWrite(dirPin, REVERSE);
-  }
-  driveMotorToStop(closeStop);
+    if (inverted) {
+        digitalWrite(dirPin, FORWARD);
+    }
+    else {
+        digitalWrite(dirPin, REVERSE);
+    }
+    driveMotorToStop(&closeStop);
 }
 
 
 void MotorWithStops::stop() {
-  digitalWrite(pwmPin, LOW);
-
+    digitalWrite(pwmPin, LOW);
 }
 
 
 void MotorWithStops::suspend(bool suspend) {
-  if (suspend) {
-    stop();
-    suspended = true;
-  }
-  else {
-    suspended = false;
-  }
+    if (suspend) {
+        stop();
+        suspended = true;
+    }
+    else {
+        suspended = false;
+    }
 }
 
 
-void MotorWithStops::driveMotorToStop(int selectedStop) {
-  if (suspended || digitalRead(selectedStop) == LOW ) {
+void MotorWithStops::driveMotorToStop(LimitSwitch *selectedStop) {
+  if (suspended || selectedStop->limitReached() ) {
     stop();
   }
   else {
@@ -83,7 +75,7 @@ void MotorWithStops::driveMotorToStop(int selectedStop) {
 
     bool done = false;
     while (!done) {
-      if (suspended || digitalRead(selectedStop) == LOW ) {
+      if (suspended || selectedStop->limitReached() ) {
         done = true;
       }
       delay(200);
@@ -113,20 +105,10 @@ bool MotorWithStops::getDirectionStatus() {
 }
 
 bool MotorWithStops::getOpenStopStatus() {
-  if ( digitalRead(openStop) == LOW) {
-    return true;
-  }
-  else {
-    return false;
-  }
+    return openStop.limitReached();
 }
 
 bool MotorWithStops::getCloseStopStatus() {
-  if (digitalRead(closeStop) == LOW) {
-    return true;
-  }
-  else {
-    return false;
-  }
+    return openStop.limitReached();
 }
 

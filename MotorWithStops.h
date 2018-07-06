@@ -6,11 +6,11 @@ Tracks motor and limit switches for movement between end points
 
 
 #include "Arduino.h"
+#include "LimitSwitch.h"
 
 class MotorWithStops {
   public:
-    MotorWithStops(int _dirPin, int _pwmPin, int _closeStop, int _openStop);
-    MotorWithStops(int _dirPin, int _pwmPin, int _closeStop, int _openStop, bool _inverted);
+    MotorWithStops(int _dirPin, int _pwmPin, bool _inverted = false, int _closeStop = -1, int _openStop = -1, bool _closeStopNormClose = false, bool _openStopNormClose = false);
     void open();
     void close();
     void stop();
@@ -20,9 +20,10 @@ class MotorWithStops {
     bool getOpenStopStatus();
     bool getCloseStopStatus();
   private:
-    int currentStatus, dirPin, pwmPin, closeStop, openStop;
-    bool inverted, suspended;
-    void driveMotorToStop(int selectedStop);
+    LimitSwitch closeStop, openStop;
+    int dirPin, pwmPin;
+    bool inverted, suspended, closeStopNormClose, openStopNormClose;
+    void driveMotorToStop(LimitSwitch *selectedStop);
     bool checkOpenStop();
     bool checkCloseStop();
     void run(bool forward);
