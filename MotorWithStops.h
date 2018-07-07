@@ -15,10 +15,10 @@ class MotorWithStops {
     void close();
     void stop();
     void suspend(bool suspend);
-    bool getMotorStatus();
-    bool getDirectionStatus();
-    bool getOpenStopStatus();
-    bool getCloseStopStatus();
+    bool isRunning();
+    bool isForward();
+    bool isOpen();
+    bool isClosed();
   private:
     LimitSwitch closeStop, openStop;
     int dirPin, pwmPin;

@@ -85,7 +85,7 @@ void MotorWithStops::driveMotorToStop(LimitSwitch *selectedStop) {
 }
 
 
-bool MotorWithStops::getMotorStatus() {
+bool MotorWithStops::isRunning() {
   if ( digitalRead(pwmPin) == HIGH) {
     return true;
   }
@@ -94,7 +94,7 @@ bool MotorWithStops::getMotorStatus() {
   }
 }
 
-bool MotorWithStops::getDirectionStatus() {
+bool MotorWithStops::isForward() {
 
   if ( digitalRead(dirPin) == HIGH) {
     return true;
@@ -104,11 +104,11 @@ bool MotorWithStops::getDirectionStatus() {
   }
 }
 
-bool MotorWithStops::getOpenStopStatus() {
+bool MotorWithStops::isOpen() {
     return openStop.limitReached();
 }
 
-bool MotorWithStops::getCloseStopStatus() {
-    return openStop.limitReached();
+bool MotorWithStops::isClosed() {
+    return closeStop.limitReached();
 }
 
