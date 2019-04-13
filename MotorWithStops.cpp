@@ -45,6 +45,13 @@ void MotorWithStops::close() {
     driveMotorToStop(&closeStop);
 }
 
+void MotorWithStops::accelerate(int stepDelay = 3){
+	for (int i = 0; i< 255; i++){
+      analogWrite(pwmPin, i);
+      delay(stepDelay);
+    }
+    digitalWrite(pwmPin, HIGH);
+}
 
 void MotorWithStops::stop() {
     digitalWrite(pwmPin, LOW);
@@ -67,23 +74,18 @@ void MotorWithStops::driveMotorToStop(LimitSwitch *selectedStop) {
     stop();
   }
   else {
-    for (int i = 0; i< 255; i++){
-      analogWrite(pwmPin, i);
-      delay(3);
-    }
-    digitalWrite(pwmPin, HIGH);
-
-    bool done = false;
-    while (!done) {
-      if (suspended || selectedStop->limitReached() ) {
-        done = true;
-      }
-      delay(200);
-    }
-    stop();
+  	currentStop = selectedStop;
+  	if ( ! isRunning() ){
+    	accelerate();
+	}
   }
 }
 
+void MotorWithStops::check(){
+	if (currentStop->limitReached()){
+		stop();
+	}
+}
 
 bool MotorWithStops::isRunning() {
   if ( digitalRead(pwmPin) == HIGH) {

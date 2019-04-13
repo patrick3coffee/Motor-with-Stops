@@ -15,18 +15,19 @@ class MotorWithStops {
     void close();
     void stop();
     void suspend(bool suspend);
+    void check();
     bool isRunning();
     bool isForward();
     bool isOpen();
     bool isClosed();
   private:
-    LimitSwitch closeStop, openStop;
+    LimitSwitch closeStop, openStop, *currentStop;
     int dirPin, pwmPin;
     bool inverted, suspended, closeStopNormClose, openStopNormClose;
     void driveMotorToStop(LimitSwitch *selectedStop);
     bool checkOpenStop();
     bool checkCloseStop();
-    void run(bool forward);
+    void accelerate(int stepDelay = 3);
 };
 
 #endif
